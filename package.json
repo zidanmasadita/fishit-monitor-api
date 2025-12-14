@@ -1,10 +1,5 @@
 {
   "name": "fishit-monitor-api",
   "version": "1.0.0",
-  "type": "module",
-  "dependencies": {
-    "express": "latest",
-    "cors": "latest",
-    "serverless-http": "latest"
-  }
+  "type": "module"
 }
