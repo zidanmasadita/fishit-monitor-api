@@ -160,4 +160,11 @@ app.get("/stats", (req, res) => {
 });
 
 // Export for Vercel
-export default app;
+import serverless from "serverless-http";
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
+export default serverless(app);
+
