@@ -1,44 +1,9 @@
-import express from "express";
-import fs from "fs";
-import path from "path";
-import cors from "cors";
-
-const app = express();
-app.use(express.json({ limit: "2mb" }));
-app.use(cors());
-
-// Absolute path
-const DATA_DIR = path.join(process.cwd(), "data");
-
-const accountsFile = path.join(DATA_DIR, "accounts.json");
-const inventoryFile = path.join(DATA_DIR, "inventory.json");
-
-// Ensure data folder exists
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
-
-// Ensure json files exist
-if (!fs.existsSync(accountsFile)) fs.writeFileSync(accountsFile, "{}");
-if (!fs.existsSync(inventoryFile)) fs.writeFileSync(inventoryFile, "{}");
-
-function readJson(file) {
-  try {
-    const data = JSON.parse(fs.readFileSync(file, "utf8"));
-    return data || {};
-  } catch {
-    return {};
-  }
-}
-
-function writeJson(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
-}
-
 // ========================
 // ROUTES
 // ========================
 
 // Test Endpoint
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.json({
     success: true,
     message: "Fishit Monitor API (NodeJS) is running!",
@@ -49,7 +14,7 @@ app.get("/", (req, res) => {
 });
 
 // Update Player
-app.post("/update", (req, res) => {
+app.post("/api/update", (req, res) => {
   const body = req.body;
 
   if (!body || !body.player || !body.player.username) {
@@ -61,7 +26,6 @@ app.post("/update", (req, res) => {
 
   const username = body.player.username;
 
-  // Load accounts
   const accounts = readJson(accountsFile);
 
   accounts[username] = {
@@ -80,7 +44,6 @@ app.post("/update", (req, res) => {
 
   writeJson(accountsFile, accounts);
 
-  // Update inventory
   const inventories = readJson(inventoryFile);
   inventories[username] = body.inventory ?? [];
   writeJson(inventoryFile, inventories);
@@ -93,7 +56,7 @@ app.post("/update", (req, res) => {
 });
 
 // Get Accounts
-app.get("/accounts", (req, res) => {
+app.get("/api/accounts", (req, res) => {
   const accounts = readJson(accountsFile);
   const now = Math.floor(Date.now() / 1000);
 
@@ -109,7 +72,7 @@ app.get("/accounts", (req, res) => {
 });
 
 // Inventory Summary
-app.get("/inventory", (req, res) => {
+app.get("/api/inventory", (req, res) => {
   const inventories = readJson(inventoryFile);
   const combined = {};
 
@@ -134,7 +97,7 @@ app.get("/inventory", (req, res) => {
 });
 
 // Stats
-app.get("/stats", (req, res) => {
+app.get("/api/stats", (req, res) => {
   const accounts = readJson(accountsFile);
   const now = Math.floor(Date.now() / 1000);
 
@@ -158,13 +121,3 @@ app.get("/stats", (req, res) => {
     }
   });
 });
-
-// Export for Vercel
-import serverless from "serverless-http";
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
-export default serverless(app);
-
