@@ -1,7 +1,6 @@
 {
   "name": "fishit-monitor-api",
   "version": "1.0.0",
-  "main": "api/index.js",
   "type": "module",
   "dependencies": {
     "express": "latest",
