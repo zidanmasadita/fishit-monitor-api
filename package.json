@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "express": "latest",
-    "cors": "latest"
+    "cors": "latest",
+    "serverless-http": "latest"
   }
 }
